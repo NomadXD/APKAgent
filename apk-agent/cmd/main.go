@@ -22,6 +22,7 @@ import (
 	"os/signal"
 
 	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/logger"
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator"
 	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/xds"
 )
 
@@ -35,7 +36,10 @@ func main() {
 	logger.LoggerServer.Info("Hello, world from Agent.")
 	sig := make(chan os.Signal)
 	signal.Notify(sig, os.Interrupt)
+	// Start APK management client
 	go xds.InitApkMgtClient(address)
+	// Start APK agent operator
+	go operator.Init()
 
 OUTER:
 	for {
