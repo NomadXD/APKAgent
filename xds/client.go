@@ -18,8 +18,8 @@
 package xds
 
 import (
+	"APKAgent/internal/logger"
 	"context"
-	"fmt"
 	"io"
 
 	core "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
@@ -65,11 +65,11 @@ func init() {
 }
 
 func initConnection(xdsURL string) error {
-	// TODO: (VirajSalaka) Bring in connection level configurations
+	// TODO: (AmaliMatharaarachchi) Bring in connection level configurations
 	conn, err := grpc.Dial(xdsURL, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		// TODO: (VirajSalaka) retries
-		fmt.Println("Error while connecting to the Global Adapter.", err)
+		// TODO: (AmaliMatharaarachchi) retries
+		logger.LoggerXds.Error("Error while connecting to the APK Management Server.", err)
 		return err
 	}
 
@@ -78,11 +78,11 @@ func initConnection(xdsURL string) error {
 	xdsStream, err = client.StreamAPKMgtApis(streamContext)
 
 	if err != nil {
-		// TODO: (VirajSalaka) handle error.
-		fmt.Println("Error while starting client. ", err)
+		// TODO: (AmaliMatharaarachchi) handle error.
+		logger.LoggerXds.Error("Error while starting client. ", err)
 		return err
 	}
-	fmt.Println("Connection to the global adapter: %s is successful.", xdsURL)
+	logger.LoggerXds.Info("Connection to the APK Management Server: %s is successful.", xdsURL)
 	return nil
 }
 
@@ -90,20 +90,20 @@ func watchAPIs() {
 	for {
 		discoveryResponse, err := xdsStream.Recv()
 		if err == io.EOF {
-			fmt.Println("EOF is received from the apk mgt server.")
+			logger.LoggerXds.Error("EOF is received from the apk mgt server.")
 			return
 		}
 		if err != nil {
-			fmt.Println("Failed to receive the discovery response ", err)
+			logger.LoggerXds.Error("Failed to receive the discovery response ", err)
 			errStatus, _ := grpcStatus.FromError(err)
 			if errStatus.Code() == codes.Unavailable {
-				fmt.Println("Connection stopped. ")
+				logger.LoggerXds.Error("Connection stopped. ")
 			}
 			nack(err.Error())
 		} else {
 			Sent = true
 			lastReceivedResponse = discoveryResponse
-			fmt.Println("Discovery response is received : %s", discoveryResponse.VersionInfo)
+			logger.LoggerXds.Debug("Discovery response is received : %s", discoveryResponse.VersionInfo)
 			addAPIToChannel(discoveryResponse)
 			ack()
 		}
@@ -145,7 +145,7 @@ func getAdapterNode() *core.Node {
 
 // InitApkMgtClient initializes the connection to the apkmgt server.
 func InitApkMgtClient(xdsURL string) {
-	fmt.Println("Starting the XDS Client connection to APK Mgt server.")
+	logger.LoggerXds.Info("Starting the XDS Client connection to APK Mgt server.")
 	err := initConnection(xdsURL)
 	if err == nil {
 		go watchAPIs()
@@ -156,7 +156,7 @@ func InitApkMgtClient(xdsURL string) {
 		}
 		xdsStream.Send(discoveryRequest)
 	} else {
-		fmt.Println("error in InitApkMgtClient", err.Error())
+		logger.LoggerXds.Error("error in InitApkMgtClient", err.Error())
 	}
 }
 
@@ -166,9 +166,9 @@ func addAPIToChannel(resp *discovery.DiscoveryResponse) {
 		err := ptypes.UnmarshalAny(res, api)
 
 		if err != nil {
-			fmt.Println("Error while unmarshalling: %s\n", err.Error())
+			logger.LoggerXds.Error("Error while unmarshalling: %s\n", err.Error())
 			continue
 		}
-		fmt.Println("client has received: ", res)
+		logger.LoggerXds.Debug("client has received: ", res)
 	}
 }

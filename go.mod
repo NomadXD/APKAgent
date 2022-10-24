@@ -11,9 +11,14 @@ require (
 )
 
 require (
-	github.com/census-instrumentation/opencensus-proto v0.2.1 // indirect
+	github.com/pelletier/go-toml v1.8.1 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
+)
+
+require (
 	github.com/cncf/xds/go v0.0.0-20211001041855-01bcc9b48dfe // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.4.1 // indirect
+	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
 	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
 	golang.org/x/text v0.3.7 // indirect
