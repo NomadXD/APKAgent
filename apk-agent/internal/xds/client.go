@@ -18,9 +18,10 @@
 package xds
 
 import (
-	"APKAgent/internal/logger"
 	"context"
 	"io"
+
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/logger"
 
 	core "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	discovery "github.com/envoyproxy/go-control-plane/envoy/service/discovery/v3"

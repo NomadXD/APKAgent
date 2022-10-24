@@ -18,10 +18,11 @@
 package main
 
 import (
-	"APKAgent/internal/logger"
-	"APKAgent/xds"
 	"os"
 	"os/signal"
+
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/logger"
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/xds"
 )
 
 const (

@@ -1,4 +1,4 @@
-module APKAgent
+module github.com/AmaliMatharaarachchi/APKAgent
 
 go 1.18
 
