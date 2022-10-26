@@ -3,10 +3,16 @@ kind: API
 metadata:
   labels:
     app.kubernetes.io/name: api
-    app.kubernetes.io/instance: api-sample
+    # app.kubernetes.io/instance: swagger-petstore
     app.kubernetes.io/part-of: operator
     app.kuberentes.io/managed-by: kustomize
     app.kubernetes.io/created-by: operator
-  name: api-sample
+  name: swagger-petstore
 spec:
-  # TODO(user): Add fields here
+  apiDisplayName: swagger-petstore
+  apiVersion: 1.0.6
+  definitionFileRef: swagger-definition-swaggerpetstore
+  prodHTTPRouteRefs:
+    - http-route-swaggerpetstore
+  apiType: REST
+  context: /pet-store-api/1.0.6

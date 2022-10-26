@@ -32,14 +32,16 @@ When you add a new logger instance add the related package name as a constant
 
 // package name constants
 const (
-	pkgServer = "github.com/AmaliMatharaarachchi/APKAgent"
-	pkgXds    = "github.com/AmaliMatharaarachchi/APKAgent/xds"
+	pkgServer   = "github.com/AmaliMatharaarachchi/APKAgent"
+	pkgXds      = "github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/xds"
+	pkgOperator = "github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator"
 )
 
 // logger package references
 var (
-	LoggerServer logging.Log
-	LoggerXds    logging.Log
+	LoggerServer   logging.Log
+	LoggerXds      logging.Log
+	LoggerOperator logging.Log
 )
 
 func init() {
@@ -50,5 +52,6 @@ func init() {
 func UpdateLoggers() {
 	LoggerServer = logging.InitPackageLogger(pkgServer)
 	LoggerXds = logging.InitPackageLogger(pkgXds)
+	LoggerOperator = logging.InitPackageLogger(pkgOperator)
 	logrus.Info("Updated loggers")
 }

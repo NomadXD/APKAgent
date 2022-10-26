@@ -23,19 +23,85 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// Important: Run "make" to regenerate code after modifying this file
+
 // APISpec defines the desired state of API
 type APISpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of API. Edit api_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// APIDisplayName is the unique name of the API in
+	// the namespace defined. "Namespace/APIDisplayName" can
+	// be used to uniquely identify an API.
+	//
+	//
+	// +kubebuilder:validation:MinLength=4
+	APIDisplayName string `json:"apiDisplayName"`
+
+	// APIVersion is the version number of the API.
+	//
+	//
+	// +kubebuilder:validation:MinLength=2
+	APIVersion string `json:"apiVersion"`
+
+	// DefinitionFileRef contains the OpenAPI 3 or Swagger
+	// definition of the API in a ConfigMap.
+	//
+	//
+	// +kubebuilder:validation:MinLength=4
+	DefinitionFileRef string `json:"definitionFileRef"`
+
+	// ProdHTTPRouteRefs contains a list of references to HttpRoutes
+	// of type HttpRoute.
+	// xref: https://github.com/kubernetes-sigs/gateway-api/blob/main/apis/v1beta1/httproute_types.go
+	//
+	//
+	ProdHTTPRouteRefs []string `json:"prodHTTPRouteRefs"`
+
+	// APIType denotes the type of the API.
+	// Possible values could be REST, GraphQL, Async
+	//
+	// +kubebuilder:validation:MinLength=2
+	APIType string `json:"apiType"`
+
+	// Context denotes the context of the API.
+	// e.g: /pet-store-api/1.0.6
+	//
+	// +kubebuilder:validation:MinLength=2
+	Context string `json:"context"`
 }
 
 // APIStatus defines the observed state of API
 type APIStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+
+	// LifeCycleStatus denotes the state of the API in its lifecycle.
+	// Possible values could be Deployed, Blocked etc.
+	//
+	//
+	// +kubebuilder:validation:MinLength=4
+	LifeCycleStatus string `json:"lifeCycleStatus"`
+
+	// Message represents a user friendly message that explains the
+	// current state of the API.
+	//
+	//
+	// +kubebuilder:validation:MinLength=4
+	// +optional
+	Message string `json:"message"`
+
+	// Accepted represents whether the API is accepted or not.
+	//
+	//
+	Accepted bool `json:"accepted"`
+
+	// DeployedTime represents the last known transition timestamp.
+	//
+	//
+	DeployedTime *metav1.Time `json:"deployedTime"`
+
+	// Events contains a list of events related to the API.
+	//
+	//
+	// +optional
+	Events []string `json:"events,omitempty"`
 }
 
 //+kubebuilder:object:root=true

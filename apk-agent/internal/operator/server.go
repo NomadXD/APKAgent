@@ -33,6 +33,8 @@ import (
 
 	dpv1alpha1 "github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator/api/v1alpha1"
 	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator/controllers"
+	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -45,6 +47,10 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(dpv1alpha1.AddToScheme(scheme))
+
+	utilruntime.Must(gwapiv1b1.AddToScheme(scheme))
+
+	utilruntime.Must(gwapiv1a2.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

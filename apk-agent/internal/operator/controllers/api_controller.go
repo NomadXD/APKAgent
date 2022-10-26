@@ -20,11 +20,14 @@ import (
 	"context"
 
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/logger"
 	dpv1alpha1 "github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator/api/v1alpha1"
+	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 )
 
 // APIReconciler reconciles a API object
@@ -47,10 +50,28 @@ type APIReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *APIReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	l := log.FromContext(ctx)
+	logger.LoggerOperator.Infof("Log from context: %v\n", l)
+	logger.LoggerOperator.Infof("Log from request: %v\n", req)
+	var api dpv1alpha1.API
+	if err := r.Get(ctx, req.NamespacedName, &api); err != nil {
+		logger.LoggerOperator.Errorf("Error fetching the API from Kubernetes API server: %v\n", err)
+	}
 
-	// TODO(user): your logic here
+	// logger.LoggerOperator.Infof("Log from reconciler: %v\n", api)
 
+	var httpRoutes []*gwapiv1b1.HTTPRoute
+	for _, httpRouteRef := range api.Spec.ProdHTTPRouteRefs {
+		var httpRoute gwapiv1b1.HTTPRoute
+		logger.LoggerOperator.Infof("HttpRouteRef: %v\n", httpRouteRef)
+		if err := r.Get(ctx, types.NamespacedName{Name: httpRouteRef, Namespace: req.Namespace}, &httpRoute); err != nil {
+			logger.LoggerOperator.Errorf("Error fetching the HttpRoute: %v for API: %v\n", httpRouteRef, api.Name)
+			return ctrl.Result{}, err
+		}
+		httpRoutes = append(httpRoutes, &httpRoute)
+	}
+	logger.LoggerOperator.Infof("Http Routes: %v\n", httpRoutes)
+	
 	return ctrl.Result{}, nil
 }
 
