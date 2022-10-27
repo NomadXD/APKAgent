@@ -54,7 +54,17 @@ type APISpec struct {
 	// xref: https://github.com/kubernetes-sigs/gateway-api/blob/main/apis/v1beta1/httproute_types.go
 	//
 	//
-	ProdHTTPRouteRefs []string `json:"prodHTTPRouteRefs"`
+	// +kubebuilder:validation:MinLength=4
+	ProdHTTPRouteRef string `json:"prodHTTPRouteRef"`
+
+	// SandHTTPRouteRef contains a list of references to HttpRoutes
+	// of type HttpRoute.
+	// xref: https://github.com/kubernetes-sigs/gateway-api/blob/main/apis/v1beta1/httproute_types.go
+	//
+	//
+	// +kubebuilder:validation:MinLength=4
+	// +optional
+	SandHTTPRouteRef string `json:"sandHTTPRouteRef"`
 
 	// APIType denotes the type of the API.
 	// Possible values could be REST, GraphQL, Async

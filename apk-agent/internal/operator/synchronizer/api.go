@@ -7,6 +7,7 @@ import (
 
 type API struct {
 	APIDefinition *v1alpha1.API
-	HttpRoutes    []*gwapiv1b1.HTTPRoute
+	ProdHttpRoute *gwapiv1b1.HTTPRoute
+	SandHttpRoute *gwapiv1b1.HTTPRoute
 	APIPolicies   []string
 }

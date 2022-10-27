@@ -12,7 +12,6 @@ spec:
   apiDisplayName: swagger-petstore
   apiVersion: 1.0.6
   definitionFileRef: swagger-definition-swaggerpetstore
-  prodHTTPRouteRefs:
-    - http-route-swaggerpetstore
+  prodHTTPRouteRef: http-route-swaggerpetstore
   apiType: REST
   context: /pet-store-api/1.0.6

@@ -31,8 +31,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/logger"
 	dpv1alpha1 "github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator/api/v1alpha1"
 	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator/controllers"
+	"github.com/AmaliMatharaarachchi/APKAgent/apk-agent/internal/operator/synchronizer"
 	gwapiv1a2 "sigs.k8s.io/gateway-api/apis/v1alpha2"
 	gwapiv1b1 "sigs.k8s.io/gateway-api/apis/v1beta1"
 	//+kubebuilder:scaffold:imports
@@ -95,13 +97,26 @@ func Init() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.APIReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "API")
-		os.Exit(1)
+	apiStore := synchronizer.NewAPIStore()
+	apiToHttpRoutesMapping := synchronizer.NewAPIMappingDataStore()
+	httpRouteToAPIMapping := synchronizer.NewHttpRouteMappingDataStore()
+	ch := make(chan string, 2)
+
+	if err := controllers.NewAPIController(mgr, apiStore, apiToHttpRoutesMapping, httpRouteToAPIMapping, &ch); err != nil {
+		logger.LoggerOperator.Errorf("Error creating API Controller: %v\n", err)
 	}
+
+	if err := controllers.NewHttpRouteController(mgr, apiStore, apiToHttpRoutesMapping); err != nil {
+		logger.LoggerOperator.Errorf("Error creating HttpRoute Controller: %v", err)
+	}
+
+	// if err = (&controllers.APIReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Scheme: mgr.GetScheme(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	setupLog.Error(err, "unable to create controller", "controller", "API")
+	// 	os.Exit(1)
+	// }
 	//+kubebuilder:scaffold:builder
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
@@ -112,6 +127,8 @@ func Init() {
 		setupLog.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
+
+	go synchronizer.ListenToEvents(apiStore, apiToHttpRoutesMapping, &ch)
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
